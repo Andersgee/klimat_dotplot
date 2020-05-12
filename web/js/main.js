@@ -58,7 +58,7 @@ function main() {
 function renderplot() {
   //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   //updateuniforms();
-  uniforms.t += 0.1;
+  uniforms.t = Math.min(uniforms.t + 0.1, 22);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gldraw(shaders.dotplot, vao);
   window.requestAnimationFrame(renderplot);

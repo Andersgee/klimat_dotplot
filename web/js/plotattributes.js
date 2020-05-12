@@ -12,18 +12,16 @@ function plotattributes(P, canvas, emissions, budget) {
     f(P.time_axis.first_year + 1 + x)
   );
 
-  var canvas_width = Math.floor(canvas.width);
-  var canvas_height = Math.floor(canvas.height);
+  var plot_maxyears = 60; //vs[0].length - 1;
   var pointspacing = 5 * devicePixelRatio;
-
-  var Nx = canvas_width / pointspacing;
-  var Ny = canvas_height / pointspacing;
-  var plot_maxyears = vs[0].length - 1;
+  var Nx = canvas.width / pointspacing;
+  var Ny = canvas.height / pointspacing;
 
   var plot_maxtons = maximum(vs);
   var yearsperpoint = plot_maxyears / Nx;
   var tonsperpointY = plot_maxtons / Ny; //moving one step in y (for a whole year, which has several points)
   var tonsperpoint = tonsperpointY * yearsperpoint;
+  console.log("tonsperpoint:", tonsperpoint);
 
   uniforms.Nxy = [Nx, Ny];
   uniforms.yearsperpoint = yearsperpoint;
