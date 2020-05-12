@@ -69,13 +69,13 @@ function setup() {
 function set_p1(v) {
   atr_current.p1 = v;
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p1);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.DYNAMIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW);
 }
 
 function set_p2(v) {
   atr_current.p2 = v;
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p2);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.DYNAMIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW);
 }
 
 function change_data(i) {
@@ -120,6 +120,39 @@ function renderplot() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gldraw(shaders.dotplot, vao);
   window.requestAnimationFrame(renderplot);
+}
+
+function clamp(x, a, b) {
+  return Math.max(a, Math.min(x, b));
+}
+
+function mix(a, b, t) {
+  return a * (1 - t) + b * t;
+}
+
+function invmix(edge0, edge1, x) {
+  return clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+}
+
+function smoothstep(edge0, edge1, x) {
+  let t = invmix(edge0, edge1, x);
+  return t * t * (3.0 - 2.0 * t);
+}
+
+function smoothmix(p1, p2, t1, t2, t) {
+  return mix(p1, p2, smoothstep(0.0, 1.0, invmix(t1, t2, t)));
+}
+
+function vecsmoothmix(p1, p2, t1, t2, t) {
+  let n = t1.length;
+  let p = new Float32Array(p1.length);
+  for (let i = 0; i < n; i++) {
+    let x = i * 2;
+    let y = x + 1;
+    p[x] = smoothmix(p1[x], p2[x], t1[i], t2[i], t);
+    p[y] = smoothmix(p1[y], p2[y], t1[i], t2[i], t);
+  }
+  return p;
 }
 
 window.onload = setup();
