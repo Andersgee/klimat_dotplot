@@ -1,53 +1,67 @@
-async function fetchdata() {
-  var data = [fetchglsl(), fetchplotattributes()];
-  return await Promise.all(data);
+async function fetchmunicipalitydata(municipality) {
+  var baseurl =
+    "https://storage.googleapis.com/klimatsekretariatet-static/climate-visualizer/sweden/emissions/";
+  var fn = baseurl + municipality.toLowerCase() + ".json";
+  return await fetch(fn).then((res) => res.json());
+}
+
+async function fetchassets() {
+  var assets = [fetchglsl(), fetchmunicipalitydata("nyköping")];
+  return await Promise.all(assets);
 }
 
 function setup() {
-  
-
   var canvas = document.getElementById("canvas");
-  var aspect = 16/9;
-  canvas.width = window.innerWidth;
-  canvas.height = Math.floor(window.innerWidth/aspect);
+  canvas.width = window.innerWidth * 0.9;
+  canvas.height = 300;
 
-  gl = webgl(canvas)
-  fetchdata().then(data=>{
-    shaders = shaderprograms(data[0]);
-    var atr = plotattributes(data[1], canvas);
+  document.getElementById("but1").addEventListener("click", change_data(1));
+  document.getElementById("but2").addEventListener("click", change_data(2));
+  document.getElementById("but3").addEventListener("click", change_data(3));
+
+  var plotarguments = {
+    time_axis: { first_year: 1999, last_year: 2059 }, //plot x axis
+    targetshape: "percent", //"percent", "fixed percent" "linear", "sshape", "percent0"
+    policy: "stuff", //ignored if not fixed percent
+  };
+
+  gl = webgl(canvas);
+  fetchassets().then((assets) => {
+    shaders = shaderprograms(assets[0]);
+
+    data = assets[1];
+    ce.impute_years_inplace(data, 1999, 2019);
+    ce.split_budget_to_sectors_inplace(data);
+
+    var emissions_sum = data.municipality.emissions["_sum"]["_sum"];
+    var budget_sum = {
+      tCO2: data.municipality.budget.sector["_sum"],
+      year: data.municipality.budget.year,
+    };
+    //delete emissions_sectors["_sum"]
+    //delete budget_sectors["_sum"]
+
+    //convert to attributes for glsl
+    var atr = plotattributes(plotarguments, canvas, emissions_sum, budget_sum);
     vao = vertexarray(shaders.dotplot, atr);
-    main()
-  })
+    main();
+  });
+}
+function change_data(i) {
+  console.log(i);
 }
 
 function main() {
-  yearslider = document.getElementById("yearslider");
-  yearslider.oninput = updateuniforms;
-  canvas.addEventListener("mousemove", (e) => {mousexy(e);});
-
   renderplot();
-}
-
-function mix(a, b, t) {return (1-t)*a + t*b;}
-
-function updateuniforms() {
-  uniforms.t = mix(uniforms.t, yearslider.value, 0.05)
-  //uniforms.pointsize = 3.0;
 }
 
 function renderplot() {
   //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  updateuniforms()
+  //updateuniforms();
+  uniforms.t += 0.01;
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gldraw(shaders.dotplot, vao);
   window.requestAnimationFrame(renderplot);
 }
 
-
-function mousexy(e) {
-  uniforms.mousexy = [e.clientX/canvas.width, e.clientY/canvas.height];
-  //uniforms.mousexy = [e.clientX, e.clientY]; //in pixels
-  //console.log(uniforms.mousexy)
-}
-
-window.onload = setup()
+window.onload = setup();

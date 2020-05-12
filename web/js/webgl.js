@@ -133,7 +133,7 @@ function vertexarray(program, model) {
   var vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(model.index), gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(model.index), gl.STATIC_DRAW);
   for (name in program.attributes) {
     gl.enableVertexAttribArray(program.attributes[name].location);
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
