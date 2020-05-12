@@ -1,26 +1,30 @@
-
 //////////////////////////////////////////////////////////////////////////////
 // shader
 
 async function fetchglsl() {
-  return await Promise.all([fetch("/glsl/dotplot.glsl").then(res=>res.text())])
+  return await Promise.all([
+    fetch("/glsl/dotplot.glsl").then((res) => res.text()),
+  ]);
 }
 
 function shaderprograms(text) {
-  var layout={};
+  var layout = {};
   layout.attributes = {
-    "p1": 2,
-    "p2": 2,
-    "tA": 2,
+    p1: 2,
+    p2: 2,
+    tA: 2,
   };
 
   layout.uniforms = {
-    "t": "uniform1f",
-    "pointsize": "uniform1f",
-    "Nxy": "uniform2fv",
-    "mousexy": "uniform2fv",
-    "yearsperpoint": "uniform1f",
-    "tonsperpoint": "uniform1f",
+    t: "uniform1f",
+    pointsize: "uniform1f",
+    Nxy: "uniform2fv",
+    mousexy: "uniform2fv",
+    yearsperpoint: "uniform1f",
+    tonsperpoint: "uniform1f",
+    sectorcolor: "uniform3fv",
+    budgetcolor: "uniform3fv",
+    devicepixelratio: "uniform1f",
   };
 
   uniforms = {};
@@ -30,10 +34,13 @@ function shaderprograms(text) {
   uniforms.mousexy = new Float32Array(2);
   uniforms.yearsperpoint = 1.0;
   uniforms.tonsperpoint = 1.0;
+  uniforms.sectorcolor = [0, 0, 1];
+  uniforms.budgetcolor = [1, 0, 0];
+  uniforms.devicepixelratio = devicePixelRatio;
 
   var shaders = {};
   shaders.dotplot = shaderprogram(layout, text, 0);
-  return shaders;  
+  return shaders;
 }
 
 function shaderprogram(layout, text, i) {
@@ -59,8 +66,8 @@ function shaderprogram(layout, text, i) {
   program.attributes = getattributes(program, layout.attributes);
   program.uniforms = getuniforms(program, layout.uniforms);
 
-  console.log("program",i, program);
-  return program
+  console.log("program", i, program);
+  return program;
 }
 
 function getattributes(program, layout) {
@@ -74,7 +81,7 @@ function getattributes(program, layout) {
       attributes[name].size = layout[name]; //value is number (size)
     }
   }
-  return attributes
+  return attributes;
 }
 
 function getuniforms(program, layout) {
@@ -88,36 +95,45 @@ function getuniforms(program, layout) {
       uniforms[name].type = layout[name]; //value is string (function name type)
     }
   }
-  return uniforms
+  return uniforms;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 // webgl
 
 function webgl(canvas) {
-  var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-  if (!gl) {return alert("need webgl. try another browser");}
+  var gl =
+    canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+  if (!gl) {
+    return alert("need webgl. try another browser");
+  }
 
   gl.viewport(0, 0, canvas.width, canvas.height);
-  gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   //gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS);
   //gl.frontFace(gl.CW);
   //gl.enable(gl.CULL_FACE); gl.cullFace(gl.BACK);
   gl.enable(gl.DITHER);
-  gl.clearColor(1,1,1, 1);
+  gl.clearColor(1, 1, 1, 1);
 
   //VertexArray is standard in webgl2, but its also available in this extension as VertexArrayOES
-  var ext = gl.getExtension('OES_vertex_array_object') || gl.getExtension('MOZ_OES_vertex_array_object') ||gl.getExtension('WEBKIT_OES_vertex_array_object');
-  if (!ext) {return alert("couldnt get webgl extension vertex array object");}
+  var ext =
+    gl.getExtension("OES_vertex_array_object") ||
+    gl.getExtension("MOZ_OES_vertex_array_object") ||
+    gl.getExtension("WEBKIT_OES_vertex_array_object");
+  if (!ext) {
+    return alert("couldnt get webgl extension vertex array object");
+  }
   gl.createVertexArray = () => ext.createVertexArrayOES();
   gl.bindVertexArray = (vao) => ext.bindVertexArrayOES(vao);
 
-  return gl
+  return gl;
 }
 
 function gldraw(program, vao) {
   gl.useProgram(program);
-  setuniforms(program)
+  setuniforms(program);
   gl.bindVertexArray(vao);
   gl.drawElements(vao.mode, vao.count, vao.type, vao.offset);
   gl.bindVertexArray(null);
@@ -125,7 +141,10 @@ function gldraw(program, vao) {
 
 function setuniforms(program) {
   for (name in program.uniforms) {
-    gl[program.uniforms[name].type](program.uniforms[name].location, uniforms[name]);
+    gl[program.uniforms[name].type](
+      program.uniforms[name].location,
+      uniforms[name]
+    );
   }
 }
 
@@ -133,12 +152,27 @@ function vertexarray(program, model) {
   var vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(model.index), gl.STATIC_DRAW);
+  gl.bufferData(
+    gl.ELEMENT_ARRAY_BUFFER,
+    new Uint16Array(model.index),
+    gl.STATIC_DRAW
+  );
   for (name in program.attributes) {
     gl.enableVertexAttribArray(program.attributes[name].location);
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-    gl.vertexAttribPointer(program.attributes[name].location, program.attributes[name].size, gl.FLOAT, false, 0, 0);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model[name]), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(
+      program.attributes[name].location,
+      program.attributes[name].size,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array(model[name]),
+      gl.STATIC_DRAW
+    );
   }
   gl.bindVertexArray(null);
   vao.mode = gl.POINTS;
