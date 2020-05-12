@@ -55,24 +55,38 @@ function setup() {
     atr = plotattributes(plotarguments, canvas, emissions_sum, budget_sum);
     vao = vertexarray(shaders.dotplot, atr);
 
+    atr_current = plotattributes(
+      plotarguments,
+      canvas,
+      emissions_sum,
+      budget_sum
+    );
+
     main();
   });
 }
+
+function set_p1(v) {
+  atr_current.p1 = v;
+  gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p1);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.DYNAMIC_DRAW);
+}
+
+function set_p2(v) {
+  atr_current.p2 = v;
+  gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p2);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.DYNAMIC_DRAW);
+}
+
 function change_data(i) {
   console.log(i);
   if (i == 1) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p1);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(atr.p1), gl.DYNAMIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p2);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(atr.p2), gl.DYNAMIC_DRAW);
+    set_p1(vecmix(atr_current.p1, atr_current.p2, uniforms.t / 22));
+    set_p2(atr.p1);
     uniforms.t = 0;
   } else if (i == 2) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p1);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(atr.p2), gl.DYNAMIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p2);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(atr.p1), gl.DYNAMIC_DRAW);
+    set_p1(vecmix(atr_current.p1, atr_current.p2, uniforms.t / 22));
+    set_p2(atr.p2);
     uniforms.t = 0;
   } else if (i == 3) {
     let newp = atr.p1.slice(0);
@@ -91,6 +105,10 @@ function change_data(i) {
   }
 }
 
+function vecmix(a, b, t) {
+  return ce.zipmap(a, b, (a, b) => a * (1 - t) + b * t);
+}
+
 function main() {
   renderplot();
 }
@@ -98,7 +116,7 @@ function main() {
 function renderplot() {
   //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   //updateuniforms();
-  uniforms.t = Math.min(uniforms.t + 0.1, 22);
+  uniforms.t = Math.min(uniforms.t + 0.05, 22);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gldraw(shaders.dotplot, vao);
   window.requestAnimationFrame(renderplot);
