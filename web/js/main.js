@@ -27,6 +27,7 @@ function setup() {
 
   gl = webgl(canvas);
   fetchassets().then((assets) => {
+    atrbuffers = {};
     shaders = shaderprograms(assets[0]);
 
     data = assets[1];
@@ -42,7 +43,7 @@ function setup() {
     //delete budget_sectors["_sum"]
 
     //convert to attributes for glsl
-    var atr = plotattributes(plotarguments, canvas, emissions_sum, budget_sum);
+    atr = plotattributes(plotarguments, canvas, emissions_sum, budget_sum);
     vao = vertexarray(shaders.dotplot, atr);
     main();
   });
@@ -56,6 +57,15 @@ function main() {
 }
 
 function renderplot() {
+  //change some data, for debugging
+  atr.p2[4] += 0.1;
+  atr.p2[5] += 0.1;
+  atr.p2[6] += 0.1;
+  atr.p2[7] += 0.05;
+  //update plotattributes like so:
+  gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p2);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(atr.p2), gl.DYNAMIC_DRAW);
+
   //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   //updateuniforms();
   uniforms.t = Math.min(uniforms.t + 0.1, 22);

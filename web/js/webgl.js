@@ -159,7 +159,8 @@ function vertexarray(program, model) {
   );
   for (name in program.attributes) {
     gl.enableVertexAttribArray(program.attributes[name].location);
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    atrbuffers[name] = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers[name]);
     gl.vertexAttribPointer(
       program.attributes[name].location,
       program.attributes[name].size,

@@ -21,7 +21,7 @@ void main() {
   float plot_maxyears = 60.0;
   float showyear = t;
   vpos = smoothmix(p1, p2, tA, showyear);
-  gl_Position = vec4((vpos+vec2(-0.5,0.5))/Nxy*2.0-1.0, 0.0, 1.0);
+  gl_Position = vec4((vpos+vec2(0.5,0.5))/Nxy*2.0-1.0, 0.0, 1.0);
   gl_PointSize = pointsize*devicepixelratio;
 }
 #endif
