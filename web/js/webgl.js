@@ -12,7 +12,8 @@ function shaderprograms(text) {
   layout.attributes = {
     p1: 2,
     p2: 2,
-    tA: 2,
+    t1: 1,
+    t2: 1,
   };
 
   layout.uniforms = {

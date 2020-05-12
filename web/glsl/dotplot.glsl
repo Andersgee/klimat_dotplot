@@ -2,7 +2,8 @@
 precision mediump float;
 attribute vec2 p1;
 attribute vec2 p2;
-attribute vec2 tA;
+attribute float t1;
+attribute float t2;
 
 uniform float t;
 uniform float pointsize;
@@ -13,14 +14,14 @@ varying vec2 vpos;
 
 float invmix(float a, float b, float t) {return (t-a)/(b-a);}
 
-vec2 smoothmix(vec2 p1, vec2 p2, vec2 tA, float t) {
-  return mix(p1, p2, smoothstep(0.0,1.0, invmix(tA.x, tA.y, t)));
+vec2 smoothmix(vec2 p1, vec2 p2, float t1, float t2, float t) {
+  return mix(p1, p2, smoothstep(0.0,1.0, invmix(t1, t2, t)));
 }
 
 void main() {
   float plot_maxyears = 60.0;
   float showyear = t;
-  vpos = smoothmix(p1, p2, tA, showyear);
+  vpos = smoothmix(p1, p2, t1,t2, showyear);
   gl_Position = vec4((vpos+vec2(0.5,0.5))/Nxy*2.0-1.0, 0.0, 1.0);
   gl_PointSize = pointsize*devicepixelratio;
 }

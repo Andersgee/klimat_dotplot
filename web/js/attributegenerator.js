@@ -37,10 +37,11 @@ function tracks2attr_dotindices(tracks, n) {
 
   let p1 = dotindices2attrib(pi1);
   let p2 = dotindices2attrib(pi2);
-  let tA = time2attrib_random(t);
+  let t1 = time2attrib_t1(t);
+  let t2 = time2attrib_t2(t1);
   let index = [...Array(t.length).keys()]; //0,1,2,3...
 
-  return { p1, p2, tA, index };
+  return { p1, p2, t1, t2, index };
 }
 
 function animate_tracks_dotindices(tracks, n) {
@@ -148,5 +149,23 @@ function time2attrib_random(t) {
     tA[2 * i + 1] = t2;
   }
 
+  return tA;
+}
+
+function time2attrib_t1(t) {
+  const n = t.length;
+  const tA = new Array(n);
+  for (let i = 0; i < n; i++) {
+    tA[i] = Math.floor(t[i]) + Math.random();
+  }
+  return tA;
+}
+
+function time2attrib_t2(t1) {
+  const n = t1.length;
+  const tA = new Array(n);
+  for (let i = 0; i < n; i++) {
+    tA[i] = t1[i] + 1;
+  }
   return tA;
 }
