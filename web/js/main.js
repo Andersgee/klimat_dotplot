@@ -80,12 +80,19 @@ function set_p2(v) {
 
 function change_data(i) {
   console.log(i);
+  let currentpos = vecsmoothmix(
+    atr_current.p1,
+    atr_current.p2,
+    atr.t1,
+    atr.t2,
+    uniforms.t
+  );
   if (i == 1) {
-    set_p1(vecmix(atr_current.p1, atr_current.p2, uniforms.t / 22));
+    set_p1(currentpos);
     set_p2(atr.p1);
     uniforms.t = 0;
   } else if (i == 2) {
-    set_p1(vecmix(atr_current.p1, atr_current.p2, uniforms.t / 22));
+    set_p1(currentpos);
     set_p2(atr.p2);
     uniforms.t = 0;
   } else if (i == 3) {
@@ -116,7 +123,7 @@ function main() {
 function renderplot() {
   //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   //updateuniforms();
-  uniforms.t = Math.min(uniforms.t + 0.05, 22);
+  uniforms.t = Math.min(uniforms.t + 0.1, 22);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gldraw(shaders.dotplot, vao);
   window.requestAnimationFrame(renderplot);

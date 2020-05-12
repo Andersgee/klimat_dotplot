@@ -126,32 +126,6 @@ function dotindices2attrib(pi) {
   return r;
 }
 
-function time2attrib(t) {
-  const n = t.length;
-  const tA = new Float32Array(2 * n);
-
-  for (let i = 0; i < n; i++) {
-    tA[2 * i + 0] = t[i];
-    tA[2 * i + 1] = t[i] + 1;
-  }
-
-  return tA;
-}
-
-function time2attrib_random(t) {
-  const n = t.length;
-  const tA = new Array(2 * n);
-
-  for (let i = 0; i < n; i++) {
-    const t1 = Math.floor(t[i]) + Math.random();
-    const t2 = t1 + 1;
-    tA[2 * i + 0] = t1;
-    tA[2 * i + 1] = t2;
-  }
-
-  return tA;
-}
-
 function time2attrib_t1(t) {
   const n = t.length;
   const tA = new Array(n);
