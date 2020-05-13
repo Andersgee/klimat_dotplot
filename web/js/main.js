@@ -126,7 +126,7 @@ function set_p2(v) {
 }
 
 function change_data(plotargs) {
-  let currentpos = vecsmoothmix(atr_current.p1, atr_current.p2, atr_current.t1, atr_current.t2, uniforms.t);
+  
 
   let emissions = data.municipality.emissions;
   let tCO2 = data.municipality.budget.sector;
@@ -138,13 +138,14 @@ function change_data(plotargs) {
 
   //let v = plotattributes(plotargs, canvas, emissions_sector, budget_sector).p2;
   //let v = plotattributes_p2(plotargs, canvas, emissions_sector, budget_sector, 2020)
-
   let [v_old, v] = ordered_plotattributes_p2(current_plotargs, plotargs, canvas, emissions_sector, budget_sector, 2020)
+  
+  let currentpos = vecsmoothmix(atr_current.p1, atr_current.p2, atr_current.t1, atr_current.t2, uniforms.t);
+  //set_p1(currentpos);
 
-  console.log("v.length: ",v.length)
-  console.log("v_old.length: ",v_old.length)
-  //let v = atr.p1
-  set_p1(currentpos);
+  //let currentpos = vecsmoothmix(atr_current.p1, v_old, atr_current.t1, atr_current.t2, uniforms.t);
+  set_p1(v_old);
+
   set_p2(v);
   uniforms.t = 0;
   //animationspeed = 0.4
