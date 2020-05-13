@@ -11,7 +11,7 @@ function vs2tracks(vs, yearsperpoint, tonsperpoint, tCO2_sum) {
   let ndots = Math.round(tCO2_sum * points_per_tC02 * points_per_year);
   tracks.forEach((t) => track_tail_inplace(t, ndots));
   tracks_same_length_inplace(tracks);
-  return { tracks, ndots };
+  return [tracks, ndots];
 }
 
 function track_tail_inplace(track, n) {
@@ -143,3 +143,80 @@ function time2attrib_t2(t1) {
   }
   return tA;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+function dotinds_same_length_inplace(pi1,pi2) {
+  if (pi1.length>pi2.length) {
+    let N = pi1.length-pi2.length
+    for (let i=0; i<N; i++) {pi2.push([])}
+  }
+  else if (pi2.length>pi1.length) {
+    let N = pi2.length-pi1.length
+    for (let i=0; i<N; i++) {pi1.push([])}
+  }
+  
+}
+
+
+function ordered_indices2attribs(pi1, pi2) {
+  dotinds_same_length_inplace(pi1,pi2)
+
+  const max_each1 = pi1.map((a) => Math.max(...a));
+  const N1 = 1 + Math.max(...max_each1);
+
+  const max_each2 = pi2.map((a) => Math.max(...a));
+  const N2 = 1 + Math.max(...max_each2);
+
+  const N = 2*Math.max(N1,N2)
+
+  let coord1 = new Float32Array(N);
+  let coord2 = new Float32Array(N);
+
+  let i = 0
+  let i1=N //reverse index, starting from end
+  let i2=N
+
+  for (let x=0; x<pi1.length; x++) {
+    let n1 = pi1[x].length
+    let n2 = pi2[x].length
+    
+    //if in both dotindices, place coordinates
+    for (let y=0; y<n1 && y<n2; y++) {
+      coord1[i] = x;
+      coord1[i+1] = y;
+
+      coord2[i] = x;
+      coord2[i+1] = y;
+      i += 2;
+    }
+
+    //note to self:
+    //place any remaining coordinates at end of coordinate array, 
+    //this way all moving coords come at the end of the coordinate array
+    //but more importantly, two points with same coord will fall on the same index in the coordinate array.
+    //if (n1>n2) { //not needed but is it faster to have the if statement here?
+      for (let y=n2; y<n1; y++) {
+        i1 -= 2
+        coord1[i1] = x
+        coord1[i1+1] = y
+      }
+    //} else if (n2>n1) {
+      for (let y=n1; y<n2; y++) {
+        i2 -= 2
+        coord2[i2] = x
+        coord2[i2+1] = y
+      }
+    //}
+  }
+  
+  return [coord1,coord2];
+}
+/*
+dotinds1 = [[0,1,2], [3,4], [5,6], [7,8], [9]]
+dotinds2 = [[0,1,2], [3,4,5], [6,7], [8], [9]]
+
+let [coord1, coord2] = ordered_indices2attribs(dotinds1, dotinds2)
+console.log("coord1",coord1)
+console.log("coord2",coord2)
+*/

@@ -21,7 +21,7 @@ function setup() {
   let b2 = document.getElementById("but2");
   let b3 = document.getElementById("but3");
 
-  let plotargs = {
+  current_plotargs = {
     sector: "_sum",
     time_axis: { first_year: 1999, last_year: 2059 }, //plot x axis
     targetshape: "percent", //"percent", "fixed percent" "linear", "sshape", "percent0"
@@ -53,11 +53,11 @@ function setup() {
     //delete budget["_sum"]
 
     //convert to attributes for glsl
-    atr = plotattributes(plotargs, canvas, emissions_sector, budget_sector);
+    atr = plotattributes(current_plotargs, canvas, emissions_sector, budget_sector);
     vao = vertexarray(shaders.dotplot, atr);
 
-    atr_current = plotattributes(plotargs, canvas, emissions_sector, budget_sector);
-    atr_current.p2 = plotattributes_p2(plotargs, canvas, emissions_sector, budget_sector, 2020)
+    atr_current = plotattributes(current_plotargs, canvas, emissions_sector, budget_sector);
+    atr_current.p2 = plotattributes_p2(current_plotargs, canvas, emissions_sector, budget_sector, 2020)
 
     b1.addEventListener("click", () => {
       //let v = atr.p1
@@ -104,10 +104,11 @@ function set_p1(v) {
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p1);
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.p1, gl.STATIC_DRAW);
 
+  /*
   atr_current.t1 = new Float32Array(atr.t1.length)
-  //atr_current.t1.fill(20)
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.t1);
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.t1, gl.STATIC_DRAW);
+  */
 }
 
 function set_p2(v) {
@@ -117,6 +118,7 @@ function set_p2(v) {
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p2);
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.p2, gl.STATIC_DRAW);
 
+  
   atr_current.t2 = new Float32Array(atr.t2.length)
   atr_current.t2.fill(21)
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.t2);
@@ -135,14 +137,18 @@ function change_data(plotargs) {
   let budget_sector = {tCO2: tCO2[sector], year: year};
 
   //let v = plotattributes(plotargs, canvas, emissions_sector, budget_sector).p2;
-  let v = plotattributes_p2(plotargs, canvas, emissions_sector, budget_sector, 2020)
+  //let v = plotattributes_p2(plotargs, canvas, emissions_sector, budget_sector, 2020)
+
+  let [v_old, v] = ordered_plotattributes_p2(current_plotargs, plotargs, canvas, emissions_sector, budget_sector, 2020)
+
   console.log("v.length: ",v.length)
-  console.log("atr.p1.length: ",atr.p1.length)
+  console.log("v_old.length: ",v_old.length)
   //let v = atr.p1
   set_p1(currentpos);
   set_p2(v);
   uniforms.t = 0;
-  animationspeed = 0.4
+  //animationspeed = 0.4
+  current_plotargs = plotargs;
 }
 function main() {
   renderplot();
