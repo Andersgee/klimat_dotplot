@@ -26,6 +26,7 @@ function shaderprograms(text) {
     sectorcolor: "uniform3fv",
     budgetcolor: "uniform3fv",
     devicepixelratio: "uniform1f",
+    animatecolor: "uniform1f",
   };
 
   uniforms = {};
@@ -35,9 +36,10 @@ function shaderprograms(text) {
   uniforms.mousexy = new Float32Array(2);
   uniforms.yearsperpoint = 1.0;
   uniforms.tonsperpoint = 1.0;
-  uniforms.sectorcolor = [0, 0, 1];
-  uniforms.budgetcolor = [1, 0, 0];
+  uniforms.sectorcolor = [1, 0, 0];
+  uniforms.budgetcolor = [0, 0, 1];
   uniforms.devicepixelratio = devicePixelRatio;
+  uniforms.animatecolor = 1;
 
   var shaders = {};
   shaders.dotplot = shaderprogram(layout, text, 0);

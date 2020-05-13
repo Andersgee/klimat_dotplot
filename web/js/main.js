@@ -15,6 +15,7 @@ function setup() {
   var canvas = document.getElementById("canvas");
   canvas.width = window.innerWidth * 0.9;
   canvas.height = 300;
+  animationspeed = 0.1
 
   let b1 = document.getElementById("but1");
   let b2 = document.getElementById("but2");
@@ -66,7 +67,7 @@ function setup() {
         targetshape: "percent", //"percent", "fixed percent" "linear", "sshape", "percent0"
         policy: "stuff", //ignored if not fixed percent
       };
-
+      uniforms.animatecolor = 0;
       change_data(plotargs);
     });
     b2.addEventListener("click", () => {
@@ -78,6 +79,7 @@ function setup() {
         policy: "stuff", //ignored if not fixed percent
       };
 
+      uniforms.animatecolor = 0;
       change_data(plotargs);
     });
     b3.addEventListener("click", () => {
@@ -89,6 +91,7 @@ function setup() {
         policy: "stuff", //ignored if not fixed percent
       };
 
+      uniforms.animatecolor = 0;
       change_data(plotargs);
     });
 
@@ -139,6 +142,7 @@ function change_data(plotargs) {
   set_p1(currentpos);
   set_p2(v);
   uniforms.t = 0;
+  animationspeed = 0.4
 }
 function main() {
   renderplot();
@@ -147,7 +151,7 @@ function main() {
 function renderplot() {
   //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   //updateuniforms();
-  uniforms.t = Math.min(uniforms.t + 0.2, 22);
+  uniforms.t = Math.min(uniforms.t + animationspeed, 22);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gldraw(shaders.dotplot, vao);
   window.requestAnimationFrame(renderplot);

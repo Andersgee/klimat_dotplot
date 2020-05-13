@@ -41,6 +41,7 @@ uniform float yearsperpoint;
 uniform float tonsperpoint;
 uniform vec3 sectorcolor;
 uniform vec3 budgetcolor;
+uniform float animatecolor;
 //uniform float hoveropacity;
 
 void main() {
@@ -53,11 +54,12 @@ void main() {
   p.y = 1.0-p.y;
 
   float pointyear = p.x*plot_maxyears; //year of the point, (as float)
-  vec4 color = (pointyear > t-2.0) ? rightcolor : leftcolor;
-
+  float lineyear = (animatecolor>0.5) ? t : 22.0;
+  vec4 color = (pointyear > lineyear-2.0) ? rightcolor : leftcolor;
   //float mouseyear = floor(mousexy.x*devicepixelratio*plot_maxyears); //year of the mouse
   //float alpha = ((pointyear < mouseyear) || (pointyear >= mouseyear+1.0)) ? hoveropacity : 1.0;
 
+  
   float r = length(2.0*gl_PointCoord - 1.0); //distance from center of point
   if (r > 1.0) {
     discard;
