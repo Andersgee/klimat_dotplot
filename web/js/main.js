@@ -56,6 +56,7 @@ function setup() {
     vao = vertexarray(shaders.dotplot, atr);
 
     atr_current = plotattributes(plotargs, canvas, emissions_sector, budget_sector);
+    atr_current.p2 = plotattributes_p2(plotargs, canvas, emissions_sector, budget_sector, 2020)
 
     b1.addEventListener("click", () => {
       //let v = atr.p1
@@ -120,7 +121,7 @@ function set_p2(v) {
 }
 
 function change_data(plotargs) {
-  let currentpos = vecsmoothmix(atr_current.p1, atr_current.p2, atr.t1, atr.t2, uniforms.t);
+  let currentpos = vecsmoothmix(atr_current.p1, atr_current.p2, atr_current.t1, atr_current.t2, uniforms.t);
 
   let emissions = data.municipality.emissions;
   let tCO2 = data.municipality.budget.sector;
