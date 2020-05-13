@@ -21,7 +21,7 @@ function setup() {
   let b3 = document.getElementById("but3");
 
   let plotargs = {
-    sector: "Arbetsmaskiner",
+    sector: "_sum",
     time_axis: { first_year: 1999, last_year: 2059 }, //plot x axis
     targetshape: "percent", //"percent", "fixed percent" "linear", "sshape", "percent0"
     policy: "stuff", //ignored if not fixed percent
@@ -101,6 +101,7 @@ function set_p1(v) {
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.p1, gl.STATIC_DRAW);
 
   atr_current.t1 = new Float32Array(atr.t1.length)
+  //atr_current.t1.fill(20)
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.t1);
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.t1, gl.STATIC_DRAW);
 }
@@ -113,7 +114,7 @@ function set_p2(v) {
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.p2, gl.STATIC_DRAW);
 
   atr_current.t2 = new Float32Array(atr.t2.length)
-  atr_current.t2.fill(20)
+  atr_current.t2.fill(21)
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.t2);
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.t2, gl.STATIC_DRAW);
 }
@@ -129,7 +130,8 @@ function change_data(plotargs) {
   let emissions_sector = emissions[sector]["_sum"];
   let budget_sector = {tCO2: tCO2[sector], year: year};
 
-  let v = plotattributes(plotargs, canvas, emissions_sector, budget_sector).p2;
+  //let v = plotattributes(plotargs, canvas, emissions_sector, budget_sector).p2;
+  let v = plotattributes_p2(plotargs, canvas, emissions_sector, budget_sector, 2020)
   console.log("v.length: ",v.length)
   console.log("atr.p1.length: ",atr.p1.length)
   //let v = atr.p1

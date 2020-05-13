@@ -58,7 +58,7 @@ void main() {
   //float mouseyear = floor(mousexy.x*devicepixelratio*plot_maxyears); //year of the mouse
   //float alpha = ((pointyear < mouseyear) || (pointyear >= mouseyear+1.0)) ? hoveropacity : 1.0;
 
-  float r = length(2.0*gl_PointCoord - 1.0); //distance (in pixels) from center of point
+  float r = length(2.0*gl_PointCoord - 1.0); //distance from center of point
   if (r > 1.0) {
     discard;
   }
