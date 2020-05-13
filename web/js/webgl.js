@@ -3,7 +3,7 @@
 
 async function fetchglsl() {
   return await Promise.all([
-    fetch("/glsl/dotplot.glsl").then((res) => res.text()),
+    fetch("./glsl/dotplot.glsl").then((res) => res.text()),
   ]);
 }
 
