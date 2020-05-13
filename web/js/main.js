@@ -118,11 +118,12 @@ function set_p2(v) {
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.p2);
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.p2, gl.STATIC_DRAW);
 
-  
+  /*
   atr_current.t2 = new Float32Array(atr.t2.length)
   atr_current.t2.fill(21)
   gl.bindBuffer(gl.ARRAY_BUFFER, atrbuffers.t2);
   gl.bufferData(gl.ARRAY_BUFFER, atr_current.t2, gl.STATIC_DRAW);
+  */
 }
 
 function change_data(plotargs) {
